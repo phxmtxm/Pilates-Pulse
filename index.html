@@ -209,7 +209,7 @@
                     <label>HORA</label><select id="h-${dia}">${generarHoras(p[0])}</select>
                     <label>TIPO DE CLASE</label><select id="t-${dia}">${CLASES.map(c=>`<option ${p[1]==c?'selected':''}>${c}</option>`).join('')}</select>
                     <label>MODALIDAD</label><select id="m-${dia}">${MODALIDADES.map(m=>`<option ${p[2]==m?'selected':''}>${m}</option>`).join('')}</select>
-                    <label>ALUMNO</label><input type="text" id="n-${dia}" value="${p[3]}">
+                    <label>ALUMNO(S) - (Separar por coma para enumerar)</label><input type="text" id="n-${dia}" value="${p[3]}">
                     <button class="btn-principal" style="padding:12px; font-size:0.6rem;" onclick="pushClase('${dia}', '${editId}')">GUARDAR</button>
                     ${editId ? `<button class="btn-cancelar" style="background:var(--danger); color:white; padding:10px; font-size:0.5rem;" onclick="borrar('${editId}')">ELIMINAR</button>` : ''}
                     <button class="btn-cancelar" style="padding:10px; font-size:0.5rem;" onclick="document.getElementById('${targetDiv}').innerHTML=''">CANCELAR</button>
@@ -226,6 +226,22 @@
             } return res;
         }
 
+        // --- FUNCION PARA FORMATEAR NOMBRES ---
+        function formatAlumnos(texto) {
+            if(!texto.includes(',')) return texto;
+            return texto.split(',').map((n, i) => `${i+1}-${n.trim()}`).join('<br>');
+        }
+
+        // --- FUNCION PARA CONVERTIR HORA A FORMATO 24H PARA ORDENAR ---
+        function a24h(horaStr) {
+            let [tiempo, ampm] = horaStr.split(' ');
+            let [hh, mm] = tiempo.split(':');
+            hh = parseInt(hh);
+            if (ampm === "PM" && hh < 12) hh += 12;
+            if (ampm === "AM" && hh === 12) hh = 0;
+            return hh * 60 + parseInt(mm);
+        }
+
         async function pushClase(dia, editId = "null") {
             const content = `${document.getElementById('h-'+dia).value}|${document.getElementById('t-'+dia).value}|${document.getElementById('m-'+dia).value}|${document.getElementById('n-'+dia).value}`;
             if (editId !== "null") {
@@ -239,16 +255,20 @@
 
         async function updateAll() {
             const { data } = await _sp.from('horarios').select('*');
-            CACHE_HORARIOS = data;
+            // ORDENAR CACHE_HORARIOS POR HORA
+            CACHE_HORARIOS = data.sort((a, b) => {
+                if (a.celda_id === 'DB_ENTRY' || b.celda_id === 'DB_ENTRY') return 0;
+                return a24h(a.contenido.split('|')[0]) - a24h(b.contenido.split('|')[0]);
+            });
             CACHE_ALUMNOS = data.filter(x => x.celda_id === 'DB_ENTRY');
             
             DIAS.forEach(d => {
-                const filtrados = data.filter(x => x.celda_id === d);
+                const filtrados = CACHE_HORARIOS.filter(x => x.celda_id === d);
                 document.getElementById(`badge-${d}`).innerText = filtrados.length;
                 document.getElementById(`clases-${d}`).innerHTML = filtrados.map(i => {
                     const p = i.contenido.split('|');
                     return `<div class="clase-box" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.75rem;"><b>${p[0]}</b> — ${p[1]}<br><small style="opacity:0.6;">${p[2]} / ${p[3]}</small></span>
+                        <span style="font-size:0.75rem;"><b>${p[0]}</b> — ${p[1]}<br><small style="opacity:0.6;">${p[2]} / ${formatAlumnos(p[3])}</small></span>
                         <div style="display:flex; gap:10px;">
                             <span onclick="addClasePopup('${d}', '${i.id}', '${i.contenido}')" style="cursor:pointer; font-size:0.8rem;">📝</span>
                             <span onclick="borrar('${i.id}')" style="opacity:0.2; cursor:pointer;">×</span>
@@ -281,7 +301,7 @@
                                         <span class="crono-edit-icon" onclick="addClasePopup('${dia}', '${c.id}', '${c.contenido}')">📝</span>
                                     </div>
                                     <div id="crono-detail-${c.id}" class="crono-detail-box">
-                                        <b>ALUMNO:</b> ${p[3]}<br>
+                                        <b>ALUMNO(S):</b><br> ${formatAlumnos(p[3])}<br><br>
                                         <b>MODALIDAD:</b> ${p[2]}
                                     </div>
                                 </div>`;
@@ -408,7 +428,10 @@
             document.getElementById('btn-db').classList.toggle('active-btn', id === 'modulo-alumnos');
             document.getElementById('btn-notif').classList.toggle('active-btn', id === 'modulo-notificaciones');
             
-            if(id === 'modulo-cronograma') document.getElementById('edit-form-crono').innerHTML = '';
+            if(id === 'modulo-cronograma') {
+                document.getElementById('edit-form-crono').innerHTML = '';
+                renderCronograma(); // Refrescar orden al entrar
+            }
         }
 
         async function borrar(id) { 
