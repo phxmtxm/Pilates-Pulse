@@ -23,7 +23,6 @@
             --font-fancy: 'Playfair Display', serif;
         }
 
-        /* --- KEYFRAMES PARA ANIMACIONES DE LUJO --- */
         @keyframes bokehFloat {
             0% { transform: translateY(0) translateX(0); opacity: 0; }
             10% { opacity: 0.03; }
@@ -52,10 +51,9 @@
             color: #fff; 
             overflow-x: hidden; 
             letter-spacing: -0.02em; 
-            position: relative; /* Necesario para las partículas */
+            position: relative; 
         }
 
-        /* --- DECORACIÓN: FONDO DE PARTÍCULAS --- */
         .bokeh-container {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -85,7 +83,6 @@
 
         .branding-container { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px 0; position: relative; }
         .logo-pulse-circle { width: 80px; height: 80px; background: #fff; border-radius: 50%; overflow: hidden; border: 3px solid #1a1a1c; transition: transform 0.5s ease; }
-        .branding-container:hover .logo-pulse-circle { transform: scale(1.05) rotate(3deg); }
         .logo-pulse-circle img { width: 100%; height: 100%; object-fit: cover; }
         .brand-text { font-weight: 900; letter-spacing: 5px; margin-top: 15px; font-size: 1rem; text-transform: uppercase; }
 
@@ -96,7 +93,6 @@
 
         input, select, textarea { width: 100%; background: #1a1a1c; border: 1px solid var(--border); padding: 18px; border-radius: 20px; color: #fff; margin-bottom: 15px; font-family: inherit; }
         
-        /* --- ANIMACIÓN: SHIMMER EN BOTÓN PRINCIPAL --- */
         .btn-principal { 
             background: #fff; 
             color: #000; 
@@ -109,7 +105,7 @@
             text-transform: uppercase; 
             letter-spacing: 2px; 
             position: relative; 
-            overflow: hidden; /* Necesario para el shimmer */
+            overflow: hidden; 
         }
 
         .btn-principal::after {
@@ -118,27 +114,25 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
             animation: shimmer 2s infinite;
-            animation-delay: 1s; /* Espera un poco antes de empezar */
+            animation-delay: 1s;
         }
 
         .btn-cancelar { background: #1a1a1c; color: #777; border: 1px solid var(--border); padding: 15px; border-radius: 20px; width: 100%; cursor: pointer; margin-top: 10px; font-weight: 800; }
         
         .main-container { padding: 20px; max-width: 500px; margin: 0 auto; padding-bottom: 150px; position: relative; z-index: 1; }
         
-        /* --- ANIMACIÓN: TARJETAS RESPIRABLES --- */
         .dia-item { 
             background: var(--card); 
             margin-bottom: 15px; 
             border-radius: 30px; 
             border: 1px solid var(--border); 
             overflow: hidden; 
-            animation: cardPulse 4s infinite ease-in-out; /* Animación sutil */
+            animation: cardPulse 4s infinite ease-in-out; 
         }
         .dia-item:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-2px); transition: all 0.3s; }
 
         .dia-header { padding: 25px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         
-        /* --- ANIMACIÓN: CLASE BOX RESPIRABLE --- */
         .clase-box { 
             background: rgba(255,255,255,0.03); 
             padding: 20px; 
@@ -146,7 +140,7 @@
             margin-bottom: 12px; 
             border: 1px solid var(--border); 
             position: relative; 
-            animation: cardPulse 5s infinite ease-in-out; /* Animación sutil */
+            animation: cardPulse 5s infinite ease-in-out; 
             animation-delay: 1s;
         }
 
@@ -165,6 +159,10 @@
         .crono-edit-icon { cursor: pointer; font-size: 1rem; padding: 5px; opacity: 0.7; transition: all 0.3s; }
         .crono-edit-icon:hover { opacity: 1; transform: scale(1.2) rotate(-10deg); }
         .crono-detail-box { display: none; margin: 10px 0 10px 18px; padding: 15px; background: #1a1a1c; border-radius: 15px; border: 1px solid var(--border); font-size: 0.75rem; color: #aaa; line-height: 1.6; animation: fadeIn 0.3s ease; }
+        
+        /* Estilo para el link de WhatsApp */
+        .ws-link { color: #25D366; text-decoration: none; font-weight: 600; border-bottom: 1px dashed #25D366; }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
         .footer-nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; z-index: 999; }
@@ -176,8 +174,7 @@
 </head>
 <body>
 
-    <div class="bokeh-container">
-        </div>
+    <div class="bokeh-container"></div>
 
     <div id="login-section">
         <div class="branding-container">
@@ -251,31 +248,25 @@
         let CACHE_HORARIOS = [];
 
         window.onload = () => {
-            initBokeh(); // Iniciar decoración de fondo
+            initBokeh();
             if (localStorage.getItem('studio_auth')) startApp();
             else document.getElementById('login-section').style.display = 'flex';
         };
 
-        // --- FUNCIÓN JS PARA GENERAR PARTÍCULAS BOKEH ---
         function initBokeh() {
             const container = document.querySelector('.bokeh-container');
-            const count = 15; // Número de orbes (pocos para mantener lujo)
+            const count = 15;
             for (let i = 0; i < count; i++) {
                 const bokeh = document.createElement('div');
                 bokeh.className = 'bokeh';
-                
-                // Tamaños y posiciones aleatorias sutiles
-                const size = Math.random() * 150 + 50; // 50px a 200px
+                const size = Math.random() * 150 + 50;
                 bokeh.style.width = `${size}px`;
                 bokeh.style.height = `${size}px`;
                 bokeh.style.left = `${Math.random() * 100}%`;
-                bokeh.style.top = `${Math.random() * 100 + 10}%`; // Empezar un poco abajo
-
-                // Duraciones de animación aleatorias (lentas)
-                const duration = Math.random() * 20 + 15; // 15s a 35s
+                bokeh.style.top = `${Math.random() * 100 + 10}%`;
+                const duration = Math.random() * 20 + 15;
                 bokeh.style.animationDuration = `${duration}s`;
                 bokeh.style.animationDelay = `${Math.random() * 10}s`;
-
                 container.appendChild(bokeh);
             }
         }
@@ -369,28 +360,22 @@
 
         async function pushClase(dia, editId = "null") {
             const content = `${document.getElementById('h-'+dia).value}|${document.getElementById('t-'+dia).value}|${document.getElementById('m-'+dia).value}|${document.getElementById('n-'+dia).value}`;
-            
             if (editId !== "null") {
                 await _sp.from('horarios').update({ contenido: content }).eq('id', editId);
             } else {
                 await _sp.from('horarios').insert([{ celda_id: dia, contenido: content }]);
             }
-            
             document.getElementById('edit-form-crono').innerHTML = '';
             document.getElementById(`clase-form-${dia}`).innerHTML = '';
-            
             updateAll();
         }
 
         async function updateAll() {
             const { data } = await _sp.from('horarios').select('*');
-            
             CACHE_HORARIOS = data.filter(x => x.celda_id !== 'DB_ENTRY').sort((a, b) => {
                 return a24h(a.contenido.split('|')[0]) - a24h(b.contenido.split('|')[0]);
             });
-
             CACHE_ALUMNOS = data.filter(x => x.celda_id === 'DB_ENTRY');
-            
             DIAS.forEach(d => {
                 const filtrados = CACHE_HORARIOS.filter(x => x.celda_id === d);
                 document.getElementById(`badge-${d}`).innerText = filtrados.length;
@@ -460,9 +445,17 @@
             document.getElementById('render-alumnos').innerHTML = lista.map(a => {
                 const p = a.contenido.split('|');
                 const estaVencido = checkVencimiento(p[10]);
+                // Limpiar el teléfono para el link de WhatsApp (quitar espacios)
+                const telLimpio = p[2].replace(/\s+/g, '');
+                
                 return `<div class="clase-box">
                     <b style="font-size:0.85rem;" class="${estaVencido ? 'vence-alerta' : ''}">${p[1] || 'SIN NOMBRE'}</b>
-                    <br><small style="opacity:0.5;">${p[3]} — ${p[4]}</small>
+                    <br>
+                    <small style="opacity:0.7;">
+                        <a href="https://wa.me/${telLimpio}" target="_blank" class="ws-link">📱 WhatsApp: ${p[2]}</a>
+                    </small>
+                    <br>
+                    <small style="opacity:0.5;">${p[3]} — ${p[4]}</small>
                     <div id="extra-${a.id}" class="ficha-detalles">
                         <p><b>EDAD:</b> ${p[11]} años</p>
                         <p><b>TELÉFONO:</b> ${p[2]}</p>
@@ -519,7 +512,7 @@
                 <div style="background:#111; padding:20px; border-radius:30px; border:1px solid #222; margin-bottom:20px; animation: fadeIn 0.4s ease;">
                     <label>Nombre</label><input type="text" id="db-nom" value="${p[1]}">
                     <label>Edad</label><select id="db-edad">${edades}</select>
-                    <label>Teléfono</label><input type="text" id="db-tel" value="${p[2]}">
+                    <label>Teléfono (formato internacional ej: 549...)</label><input type="text" id="db-tel" value="${p[2]}">
                     <label>Clase</label><select id="db-clase">${CLASES.map(c=>`<option ${p[3]==c?'selected':''}>${c}</option>`).join('')}</select>
                     <label>Frecuencia</label><select id="db-frec">${FRECUENCIAS.map(f=>`<option ${p[4]==f?'selected':''}>${f}</option>`).join('')}</select>
                     <label>Modalidad</label><select id="db-mod">${MODALIDADES.map(m=>`<option ${p[5]==m?'selected':''}>${m}</option>`).join('')}</select>
@@ -539,14 +532,13 @@
             const content = `DB|${d('db-nom')}|${d('db-tel')}|${d('db-clase')}|${d('db-frec')}|${d('db-mod')}|${d('db-salud')}|${d('db-visita')}|${d('db-fuente')}|${d('db-ref')}|${d('db-vence')}|${d('db-edad')}`;
             if(editId !== "null") await _sp.from('horarios').update({ contenido: content }).eq('id', editId);
             else await _sp.from('horarios').insert([{ celda_id: 'DB_ENTRY', contenido: content }]);
-            
             cerrarFormAlumno(); 
             updateAll();
         }
 
         function cerrarFormAlumno() { 
             document.getElementById('form-alumno-nuevo').innerHTML = ''; 
-            document.getElementById('btn-abrir-registro').style.display = 'block'; 
+            document.getElementById('btn-abrir-registro').style.display = 'block';
         }
         
         function switchModulo(id) {
