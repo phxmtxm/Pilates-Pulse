@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="https://i.postimg.cc/Xqs2VjT0/image.png">
     <link rel="apple-touch-icon" href="https://i.postimg.cc/Xqs2VjT0/image.png">
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>4
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&family=Playfair+Display:italic,wght@700&display=swap" rel="stylesheet">
     
     <style>
@@ -198,6 +198,21 @@
         .nav-btn.active-btn { background: #fff; color: #000; box-shadow: 0 4px 15px rgba(255,255,255,0.1); }
         .dot-notif { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; display: none; box-shadow: 0 0 10px var(--danger); }
         label { display: block; font-size: 0.55rem; color: #888; margin-bottom: 6px; font-weight: 900; text-transform: uppercase; margin-left: 5px; }
+
+        /* Estilo para el Selector de Rango */
+        .selector-rango {
+            background: #111;
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 25px;
+        }
+        .rango-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .rango-inputs input { margin-bottom: 0; padding: 12px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -236,6 +251,15 @@
                     <div class="logo-pulse-circle" style="width: 50px; height: 50px;"><img src="https://i.postimg.cc/Xqs2VjT0/image.png"></div>
                 </div>
                 <div class="crono-header-text">Cronograma</div>
+                
+                <div class="selector-rango">
+                    <label style="text-align:center; margin-bottom:10px;">Rango de Fecha</label>
+                    <div class="rango-inputs">
+                        <input type="date" id="crono-desde" onchange="renderCronograma()">
+                        <input type="date" id="crono-hasta" onchange="renderCronograma()">
+                    </div>
+                </div>
+
                 <div id="edit-form-crono" style="margin-bottom: 20px;"></div>
                 <div id="render-cronograma"></div>
             </div>
@@ -278,6 +302,15 @@
 
         window.onload = () => {
             initBokeh();
+            // Inicializar fechas del crono (Semana actual)
+            const hoy = new Date();
+            const dDesde = new Date(hoy);
+            dDesde.setDate(hoy.getDate() - hoy.getDay() + 1);
+            const dHasta = new Date(hoy);
+            dHasta.setDate(hoy.getDate() - hoy.getDay() + 6);
+            document.getElementById('crono-desde').value = dDesde.toISOString().split('T')[0];
+            document.getElementById('crono-hasta').value = dHasta.toISOString().split('T')[0];
+
             if (localStorage.getItem('studio_auth')) startApp();
             else document.getElementById('login-section').style.display = 'flex';
         };
