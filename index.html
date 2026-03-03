@@ -18,7 +18,6 @@
             --font-main: 'Montserrat', sans-serif; --font-fancy: 'Playfair Display', serif;
         }
 
-        /* Animaciones */
         @keyframes bokehFloat {
             0% { transform: translateY(0) translateX(0); opacity: 0; }
             50% { opacity: 0.05; }
@@ -30,12 +29,11 @@
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { font-family: var(--font-main); margin: 0; background: var(--bg); color: #fff; overflow-x: hidden; }
+        body { font-family: var(--font-main); margin: 0; background: var(--bg); color: #fff; overflow-x: hidden; letter-spacing: -0.02em; }
 
         .bokeh-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
         .bokeh { position: absolute; background: #fff; border-radius: 50%; filter: blur(30px); opacity: 0; animation: bokehFloat infinite linear; }
 
-        /* Pantallas Especiales */
         #maintenance-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 30000; display: none;
@@ -48,8 +46,7 @@
             flex-direction: column; align-items: center; justify-content: center;
         }
 
-        /* UI Elements */
-        .branding-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+        .branding-container { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px 0; }
         .logo-pulse-circle { width: 80px; height: 80px; background: #fff; border-radius: 50%; overflow: hidden; border: 3px solid #1a1a1c; }
         .logo-pulse-circle img { width: 100%; height: 100%; object-fit: cover; }
         .brand-text { font-weight: 900; letter-spacing: 5px; margin-top: 15px; font-size: 1rem; text-transform: uppercase; }
@@ -58,21 +55,36 @@
         .btn-principal { background: #fff; color: #000; border: none; padding: 20px; border-radius: 20px; font-weight: 900; width: 100%; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
         .btn-cancelar { background: #1a1a1c; color: #777; border: 1px solid var(--border); padding: 15px; border-radius: 20px; width: 100%; cursor: pointer; margin-top: 10px; font-weight: 800; }
         
-        .main-container { padding: 20px; max-width: 500px; margin: 0 auto; padding-bottom: 150px; }
+        .main-container { padding: 20px; max-width: 500px; margin: 0 auto; padding-bottom: 150px; position: relative; z-index: 1; }
         
-        /* Modulos */
-        .dia-item { background: var(--card); margin-bottom: 15px; border-radius: 30px; border: 1px solid var(--border); overflow: hidden; animation: cardPulse 4s infinite; }
+        .dia-item { background: var(--card); margin-bottom: 15px; border-radius: 30px; border: 1px solid var(--border); overflow: hidden; animation: cardPulse 4s infinite ease-in-out; }
         .dia-header { padding: 25px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        
         .clase-box { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 25px; margin-bottom: 12px; border: 1px solid var(--border); position: relative; }
+        .ficha-detalles { display: none; margin-top: 15px; padding: 20px; background: rgba(0,0,0,0.6); border-radius: 20px; font-size: 0.8rem; border: 1px solid var(--border); line-height: 1.6; }
+
+        .vence-alerta { color: var(--danger) !important; text-shadow: 0 0 10px rgba(255, 45, 85, 0.3); }
+        .ws-wrapper { display: inline-flex; align-items: center; text-decoration: none; margin-top: 5px; }
+        .ws-icon { width: 18px; height: 18px; margin-right: 8px; }
+        .ws-number { color: var(--whatsapp); font-weight: 700; font-size: 0.8rem; }
+        .ws-agenda-icon { width: 16px; height: 16px; margin-left: 6px; vertical-align: text-bottom; cursor: pointer; }
+
+        .crono-header-text { font-family: var(--font-fancy); font-size: 2.2rem; text-align: center; margin-bottom: 30px; color: #fff; }
+        .crono-row { display: flex; flex-direction: column; border-bottom: 1px solid var(--border); padding: 20px 0; }
+        .crono-dia-label { font-family: var(--font-fancy); font-size: 1.5rem; color: var(--celeste); margin-bottom: 10px; font-style: italic; }
+        .crono-task { padding: 10px 0; border-radius: 10px; }
+        .crono-task-main { display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: #fff; }
+        .crono-bullet { width: 6px; height: 6px; background: var(--celeste); border-radius: 50%; margin-right: 12px; box-shadow: 0 0 6px var(--celeste); }
+        .crono-edit-icon { cursor: pointer; font-size: 1rem; padding: 5px; opacity: 0.7; }
+        .crono-detail-box { display: none; margin: 10px 0 10px 18px; padding: 15px; background: #1a1a1c; border-radius: 15px; border: 1px solid var(--border); font-size: 0.75rem; color: #aaa; line-height: 1.6; }
 
         .footer-nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; z-index: 999; }
-        .nav-btn { background: rgba(15, 15, 15, 0.85); color: #fff; padding: 12px 2px; border-radius: 15px; border: 1px solid var(--border); font-weight: 800; font-size: 0.55rem; cursor: pointer; backdrop-filter: blur(20px); text-align: center; }
+        .nav-btn { background: rgba(15, 15, 15, 0.85); color: #fff; padding: 12px 2px; border-radius: 15px; border: 1px solid var(--border); font-weight: 800; font-size: 0.5rem; cursor: pointer; backdrop-filter: blur(20px); text-align: center; }
         .nav-btn.active-btn { background: #fff; color: #000; }
+        .dot-notif { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; display: none; }
+        label { display: block; font-size: 0.55rem; color: #888; margin-bottom: 6px; font-weight: 900; text-transform: uppercase; margin-left: 5px; }
 
-        /* Panel Maestro */
-        #master-panel {
-            background: #1a0000; border: 2px solid var(--danger); padding: 20px; border-radius: 25px; margin-bottom: 30px; display: none;
-        }
+        #master-panel { background: #1a0000; border: 2px solid var(--danger); padding: 20px; border-radius: 25px; margin-bottom: 30px; display: none; }
     </style>
 </head>
 <body>
@@ -81,8 +93,8 @@
 
     <div id="maintenance-screen">
         <div class="logo-pulse-circle" style="width:100px; height:100px;"><img src="https://i.postimg.cc/Xqs2VjT0/image.png"></div>
-        <h1 style="font-family: var(--font-fancy); font-size: 2rem;">SITIO EN PAUSA</h1>
-        <p style="opacity: 0.5;">Estamos realizando ajustes técnicos.<br>Volvemos en unos minutos.</p>
+        <h1 style="font-family: var(--font-fancy); font-size: 2rem;">SITIO EN MANTENIMIENTO</h1>
+        <p style="opacity: 0.5;">Estamos trabajando en mejoras técnicas.</p>
     </div>
 
     <div id="login-section">
@@ -99,50 +111,58 @@
 
     <div id="app-content" style="display:none;">
         <div class="main-container">
-            
             <div id="master-panel">
-                <h3 style="color:var(--danger); font-size: 0.7rem; margin-top:0;">MODO SUPER-ADMIN</h3>
-                <p id="status-text" style="font-size: 0.8rem;">Estado: Cargando...</p>
-                <button onclick="toggleWeb()" class="btn-principal" style="background:var(--danger); color:white; padding:10px; font-size:0.6rem;">
-                    APAGAR / ENCENDER WEB
-                </button>
-            </div>
-
-            <div class="branding-container">
-                <div class="logo-pulse-circle" style="width:60px; height:60px;"><img src="https://i.postimg.cc/Xqs2VjT0/image.png"></div>
+                <h3 style="color:var(--danger); font-size: 0.7rem; margin-top:0;">ZONA MASTER</h3>
+                <p id="status-text" style="font-size: 0.8rem;">Estado Web: Cargando...</p>
+                <button onclick="toggleWeb()" class="btn-principal" style="background:var(--danger); color:white; padding:10px; font-size:0.6rem;">APAGAR/ENCENDER WEB</button>
             </div>
 
             <div id="modulo-agenda">
                 <div id="listaDias"></div>
             </div>
 
-            <div id="modulo-cronograma" style="display:none;"></div>
-            <div id="modulo-alumnos" style="display:none;"></div>
-            <div id="modulo-notificaciones" style="display:none;"></div>
+            <div id="modulo-cronograma" style="display:none;">
+                <div class="crono-header-text">Cronograma</div>
+                <div id="edit-form-crono"></div>
+                <div id="render-cronograma"></div>
+            </div>
+
+            <div id="modulo-alumnos" style="display:none;">
+                <input type="text" id="buscadorAlumnos" placeholder="Buscar alumno..." onkeyup="filtrarAlumnos()" style="margin-bottom:10px;">
+                <button id="btn-abrir-registro" class="btn-principal" style="margin-bottom:20px; font-size:0.7rem;" onclick="abrirFormNuevoAlumno()">+ REGISTRAR ALUMNO</button>
+                <div id="form-alumno-nuevo"></div>
+                <div id="render-alumnos"></div>
+            </div>
+
+            <div id="modulo-notificaciones" style="display:none;">
+                <h3 style="text-align:center; font-size:0.7rem;">VENCIMIENTOS PRÓXIMOS</h3>
+                <div id="lista-notificaciones"></div>
+            </div>
 
             <div class="footer-nav">
                 <button class="nav-btn active-btn" id="btn-agenda" onclick="switchModulo('modulo-agenda')">AGENDA</button>
                 <button class="nav-btn" id="btn-crono" onclick="switchModulo('modulo-cronograma')">CRONO</button>
                 <button class="nav-btn" id="btn-db" onclick="switchModulo('modulo-alumnos')">BASE DATOS</button>
-                <button class="nav-btn" id="btn-notif" onclick="switchModulo('modulo-notificaciones')">AVISOS</button>
+                <button class="nav-btn" id="btn-notif" onclick="switchModulo('modulo-notificaciones')">AVISOS <div class="dot-notif" id="active-dot"></div></button>
             </div>
-            
-            <button class="btn-cancelar" onclick="logout()" style="margin-top:40px; border:none; background:transparent; font-size:0.6rem;">CERRAR SESIÓN</button>
+            <button class="btn-cancelar" onclick="logout()" style="margin-top:40px; border:none; background:transparent;">Cerrar Sesión</button>
         </div>
     </div>
 
     <script>
         const _sp = supabase.createClient("https://iodtfnclwwgcczxgbmbq.supabase.co", "sb_publishable_uOUPFEp0T_uX85fjqi9xog_6WUS6dKg");
         const DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-        let WEB_OFF = false;
+        const CLASES = ["Align Flow", "Power Flow", "Stretch&Release", "Aerial Balance", "Mega Core", "Life Align"];
+        const MODALIDADES = ["Grupales", "Privadas", "Masajes", "Cumpleaños"];
+        const FRECUENCIAS = ["1/semana", "2/semana", "3/semana"];
+        const WS_ICON_URL = "https://i.postimg.cc/9M0NRgcD/Whats-App-svg.webp";
+        let CACHE_ALUMNOS = [], CACHE_HORARIOS = [], WEB_OFF = false;
 
         window.onload = async () => {
             initBokeh();
-            await checkStatus();
-            
+            await checkWebStatus();
             const auth = localStorage.getItem('studio_auth');
             const isMaster = localStorage.getItem('master_access');
-
             if (auth) {
                 if(isMaster === 'true') document.getElementById('master-panel').style.display = 'block';
                 startApp();
@@ -153,42 +173,31 @@
             }
         };
 
-        async function checkStatus() {
+        async function checkWebStatus() {
             const { data } = await _sp.from('horarios').select('*').eq('celda_id', 'WEB_STATUS').maybeSingle();
             if (data) {
                 WEB_OFF = (data.contenido === 'OFF');
-                const st = document.getElementById('status-text');
-                if(st) st.innerText = WEB_OFF ? "ESTADO: WEB APAGADA" : "ESTADO: WEB ACTIVA";
+                if(document.getElementById('status-text')) document.getElementById('status-text').innerText = WEB_OFF ? "ESTADO: WEB APAGADA" : "ESTADO: WEB ACTIVA";
             }
         }
 
         async function handleLogin() {
-            const u = document.getElementById('adminUser').value;
-            const p = document.getElementById('adminPass').value;
-
-            // LOGIN MAESTRO (Tú)
+            const u = document.getElementById('adminUser').value, p = document.getElementById('adminPass').value;
             if (u === "admin" && p === "m_xmA92X_12[2+XA-!") {
-                localStorage.setItem('studio_auth', 'true');
-                localStorage.setItem('master_access', 'true');
-                location.reload();
-                return;
+                localStorage.setItem('studio_auth', 'true'); localStorage.setItem('master_access', 'true');
+                location.reload(); return;
             }
-
-            // LOGIN NORMAL
             const { data } = await _sp.from('usuarios_admin').select('*').eq('usuario', u).eq('password', p).maybeSingle();
             if (data) {
-                localStorage.setItem('studio_auth', 'true');
-                localStorage.setItem('master_access', 'false');
+                localStorage.setItem('studio_auth', 'true'); localStorage.setItem('master_access', 'false');
                 location.reload();
-            } else {
-                alert("Acceso denegado");
-            }
+            } else alert("Acceso denegado");
         }
 
         async function toggleWeb() {
-            const nuevo = WEB_OFF ? 'ON' : 'OFF';
-            if(confirm(`¿Cambiar estado de la web a ${nuevo}?`)) {
-                await _sp.from('horarios').update({ contenido: nuevo }).eq('celda_id', 'WEB_STATUS');
+            const n = WEB_OFF ? 'ON' : 'OFF';
+            if(confirm(`¿${n === 'OFF' ? 'Apagar' : 'Encender'} la web?`)) {
+                await _sp.from('horarios').update({ contenido: n }).eq('celda_id', 'WEB_STATUS');
                 location.reload();
             }
         }
@@ -196,45 +205,168 @@
         function startApp() {
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('app-content').style.display = 'block';
-            renderAgenda();
-            // Aquí irían tus funciones updateAll() originales
+            renderEstructura();
+            updateAll();
         }
 
-        function renderAgenda() {
+        function renderEstructura() {
             document.getElementById('listaDias').innerHTML = DIAS.map(d => `
                 <div class="dia-item">
-                    <div class="dia-header">
+                    <div class="dia-header" onclick="toggleDia('${d}')">
                         <span style="font-weight:900; font-size:0.75rem;">${d.toUpperCase()}</span>
-                        <span style="font-size:0.5rem; opacity:0.5;">CLASES ACTIVAS</span>
+                        <span id="badge-${d}" style="font-size:0.5rem; opacity:0.5;">0</span>
+                    </div>
+                    <div class="dia-content" id="cont-${d}" style="display:none; padding: 0 20px 20px 20px;">
+                        <div id="clase-form-${d}"></div>
+                        <button class="btn-principal" style="font-size:0.55rem; background:#1a1a1c; color:#fff; padding:12px;" onclick="addClasePopup('${d}')">+ CLASE</button>
+                        <div id="clases-${d}" style="margin-top:15px;"></div>
                     </div>
                 </div>`).join('');
         }
 
-        function logout() {
-            localStorage.clear();
+        function toggleDia(d) {
+            const el = document.getElementById(`cont-${d}`);
+            const vis = el.style.display === 'block';
+            document.querySelectorAll('.dia-content').forEach(c => c.style.display = 'none');
+            el.style.display = vis ? 'none' : 'block';
+        }
+
+        function addClasePopup(dia, editId = null, existingData = null) {
+            const p = existingData ? existingData.split('|') : ["", "", "", ""];
+            const isCrono = document.getElementById('modulo-cronograma').style.display === 'block';
+            const target = editId ? (isCrono ? 'edit-form-crono' : `clase-form-${dia}`) : `clase-form-${dia}`;
+            document.getElementById(target).innerHTML = `
+                <div style="background:#000; padding:15px; border-radius:20px; border:1px solid #222; margin-bottom:15px;">
+                    <label>HORA</label><select id="h-${dia}">${generarHoras(p[0])}</select>
+                    <label>CLASE</label><select id="t-${dia}">${CLASES.map(c=>`<option ${p[1]==c?'selected':''}>${c}</option>`).join('')}</select>
+                    <label>MODALIDAD</label><select id="m-${dia}">${MODALIDADES.map(m=>`<option ${p[2]==m?'selected':''}>${m}</option>`).join('')}</select>
+                    <label>ALUMNOS</label><input type="text" id="n-${dia}" value="${p[3]}">
+                    <button class="btn-principal" onclick="pushClase('${dia}', '${editId}')">GUARDAR</button>
+                    ${editId ? `<button class="btn-cancelar" style="background:var(--danger); color:white;" onclick="borrar('${editId}')">ELIMINAR</button>` : ''}
+                    <button class="btn-cancelar" onclick="document.getElementById('${target}').innerHTML=''">CANCELAR</button>
+                </div>`;
+            if(editId) window.scrollTo({top:0, behavior:'smooth'});
+        }
+
+        function generarHoras(sel = "") {
+            let r = ""; for(let i=7; i<=21; i++) {
+                let h = i > 12 ? i-12 : i; let am = i >= 12 ? "PM" : "AM";
+                let t1 = `${h}:00 ${am}`, t2 = `${h}:30 ${am}`;
+                r += `<option ${sel==t1?'selected':''}>${t1}</option><option ${sel==t2?'selected':''}>${t2}</option>`;
+            } return r;
+        }
+
+        async function pushClase(dia, id = "null") {
+            const content = `${document.getElementById('h-'+dia).value}|${document.getElementById('t-'+dia).value}|${document.getElementById('m-'+dia).value}|${document.getElementById('n-'+dia).value}`;
+            if (id !== "null") await _sp.from('horarios').update({ contenido: content }).eq('id', id);
+            else await _sp.from('horarios').insert([{ celda_id: dia, contenido: content }]);
+            document.getElementById('edit-form-crono').innerHTML = '';
+            document.getElementById(`clase-form-${dia}`).innerHTML = '';
+            updateAll();
+        }
+
+        async function updateAll() {
+            const { data } = await _sp.from('horarios').select('*');
+            CACHE_ALUMNOS = data.filter(x => x.celda_id === 'DB_ENTRY');
+            CACHE_HORARIOS = data.filter(x => !['DB_ENTRY','WEB_STATUS'].includes(x.celda_id));
+            
+            DIAS.forEach(d => {
+                const f = CACHE_HORARIOS.filter(x => x.celda_id === d);
+                document.getElementById(`badge-${d}`).innerText = f.length;
+                document.getElementById(`clases-${d}`).innerHTML = f.map(i => {
+                    const p = i.contenido.split('|');
+                    return `<div class="clase-box" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.75rem;"><b>${p[0]}</b> — ${p[1]}<br>${formatAlumnosAgenda(p[3])}</span>
+                        <span onclick="addClasePopup('${d}', '${i.id}', '${i.contenido}')" style="cursor:pointer; opacity:0.5;">📝</span>
+                    </div>`;
+                }).join('');
+            });
+            renderAlumnosList(CACHE_ALUMNOS);
+            renderCronograma();
+            checkVencimientos();
+        }
+
+        function formatAlumnosAgenda(txt) {
+            if(!txt) return '';
+            return txt.split(',').map((n, i) => {
+                const name = n.trim();
+                const a = CACHE_ALUMNOS.find(x => x.contenido.split('|')[1].toLowerCase() === name.toLowerCase());
+                let ws = a ? `<a href="https://wa.me/${a.contenido.split('|')[2].replace(/\s+/g,'')}" target="_blank"><img src="${WS_ICON_URL}" class="ws-agenda-icon"></a>` : '';
+                return `<div style="font-size:0.65rem; margin-top:4px;">${i+1}-${name} ${ws}</div>`;
+            }).join('');
+        }
+
+        function renderCronograma() {
+            document.getElementById('render-cronograma').innerHTML = DIAS.map(d => {
+                const cls = CACHE_HORARIOS.filter(x => x.celda_id === d);
+                return `<div class="crono-row"><div class="crono-dia-label">${d}</div>
+                    ${cls.map(c => {
+                        const p = c.contenido.split('|');
+                        return `<div class="crono-task"><div class="crono-task-main" onclick="toggleCDetail('${c.id}')">
+                            <div style="display:flex; align-items:center;"><div class="crono-bullet"></div><b>${p[0]}</b> &nbsp; — &nbsp; ${p[1]}</div>
+                            <span class="crono-edit-icon" onclick="event.stopPropagation(); addClasePopup('${d}','${c.id}','${c.contenido}')">📝</span>
+                        </div><div id="cd-${c.id}" class="crono-detail-box"><b>ALUMNOS:</b><br>${p[3]}</div></div>`;
+                    }).join('')}</div>`;
+            }).join('');
+        }
+
+        function toggleCDetail(id) { const el = document.getElementById(`cd-${id}`); el.style.display = el.style.display === 'block' ? 'none' : 'block'; }
+
+        function renderAlumnosList(l) {
+            document.getElementById('render-alumnos').innerHTML = l.map(a => {
+                const p = a.contenido.split('|');
+                return `<div class="clase-box"><b>${p[1]}</b><br><small>${p[2]}</small>
+                    <div id="ex-${a.id}" class="ficha-detalles"><p>EDAD: ${p[11]} | SALUD: ${p[6]} | VENCE: ${p[10]}</p>
+                    <button class="btn-principal" style="padding:10px; font-size:0.5rem;" onclick="abrirFormNuevoAlumno('${a.id}','${a.contenido}')">EDITAR</button></div>
+                    <div style="margin-top:10px; display:flex; gap:10px;"><button class="nav-btn" style="padding:8px;" onclick="tEx('${a.id}')">DETALLES</button>
+                    <button style="color:red; background:none; border:none;" onclick="borrar('${a.id}')">BORRAR</button></div></div>`;
+            }).join('');
+        }
+
+        function tEx(id) { const el = document.getElementById(`ex-${id}`); el.style.display = el.style.display === 'block' ? 'none' : 'block'; }
+
+        function abrirFormNuevoAlumno(id = null, data = null) {
+            const p = data ? data.split('|') : Array(12).fill('');
+            document.getElementById('btn-abrir-registro').style.display = 'none';
+            document.getElementById('form-alumno-nuevo').innerHTML = `
+                <div style="background:#111; padding:20px; border-radius:25px; border:1px solid #333;">
+                    <label>Nombre</label><input type="text" id="db-nom" value="${p[1]}">
+                    <label>Teléfono</label><input type="text" id="db-tel" value="${p[2]}">
+                    <label>Vencimiento</label><input type="date" id="db-vence" value="${p[10]}">
+                    <label>Salud</label><textarea id="db-salud">${p[6]}</textarea>
+                    <label>Edad</label><input type="number" id="db-edad" value="${p[11]}">
+                    <button class="btn-principal" onclick="saveA('${id}')">GUARDAR</button>
+                    <button class="btn-cancelar" onclick="location.reload()">CANCELAR</button>
+                </div>`;
+        }
+
+        async function saveA(id) {
+            const c = `DB|${document.getElementById('db-nom').value}|${document.getElementById('db-tel').value}||||${document.getElementById('db-salud').value}||||${document.getElementById('db-vence').value}|${document.getElementById('db-edad').value}`;
+            if(id !== "null") await _sp.from('horarios').update({ contenido: c }).eq('id', id);
+            else await _sp.from('horarios').insert([{ celda_id: 'DB_ENTRY', contenido: c }]);
             location.reload();
         }
 
-        function initBokeh() {
-            const container = document.getElementById('bokeh');
-            for (let i = 0; i < 15; i++) {
-                const b = document.createElement('div');
-                b.className = 'bokeh';
-                b.style.width = b.style.height = (Math.random() * 100 + 50) + 'px';
-                b.style.left = Math.random() * 100 + '%';
-                b.style.top = Math.random() * 100 + '%';
-                b.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                container.appendChild(b);
-            }
+        function checkVencimientos() {
+            const hoy = new Date();
+            const vencidos = CACHE_ALUMNOS.filter(a => {
+                const f = a.contenido.split('|')[10];
+                if(!f) return false;
+                const dv = new Date(f + "T23:59:59");
+                return (dv - hoy) / (1000 * 60 * 60) <= 48;
+            });
+            document.getElementById('active-dot').style.display = vencidos.length ? 'block' : 'none';
+            document.getElementById('lista-notificaciones').innerHTML = vencidos.map(v => `<div class="clase-box"><b>${v.contenido.split('|')[1]}</b> - Vence: ${v.contenido.split('|')[10]}</div>`).join('');
         }
 
-        // Lógica de navegación simple para el ejemplo
         function switchModulo(id) {
-            document.querySelectorAll('.main-container > div:not(#master-panel):not(.branding-container)').forEach(m => m.style.display = 'none');
-            document.getElementById(id).style.display = 'block';
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-btn'));
-            document.getElementById('btn-' + id.split('-')[1]).classList.add('active-btn');
+            ['modulo-agenda','modulo-cronograma','modulo-alumnos','modulo-notificaciones'].forEach(m => document.getElementById(m).style.display = m === id ? 'block' : 'none');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active-btn', b.id === 'btn-' + id.split('-')[1]));
         }
+
+        function logout() { localStorage.clear(); location.reload(); }
+        async function borrar(id) { if(confirm("¿Eliminar?")) { await _sp.from('horarios').delete().eq('id', id); updateAll(); } }
+        function initBokeh() { const c = document.getElementById('bokeh'); for(let i=0; i<15; i++) { const b=document.createElement('div'); b.className='bokeh'; b.style.width=b.style.height=Math.random()*100+50+'px'; b.style.left=Math.random()*100+'%'; b.style.top=Math.random()*100+'%'; b.style.animationDuration=Math.random()*10+10+'s'; c.appendChild(b); } }
     </script>
 </body>
 </html>
