@@ -371,7 +371,7 @@
             } return res;
         }
 
-        function formatAlumnosAgenda(texto) {
+        function formatAlumnosAgenda(texto, horaClase, tipoClase) {
             if(!texto) return '';
             const alumnosArray = texto.split(',');
             return alumnosArray.map((nombreRaw, i) => {
@@ -381,10 +381,28 @@
                 let linkWs = '';
                 if (alumnoDB) {
                     const telLimpio = alumnoDB.contenido.split('|')[2].replace(/\s+/g, '');
-                    linkWs = `<a href="https://wa.me/${telLimpio}" target="_blank">
+                    
+                    // Personalización del mensaje de WhatsApp
+                    const mensaje = `Buenas tardes ${nombreLimpio}!! 👋🏻🌤️\n` +
+                                    `Tienes una reservación para recibir tu clase de ${tipoClase}\n` +
+                                    `Horario: ${horaClase}\n` +
+                                    `Por favor, confirmar asistencia.\n` +
+                                    `Pilates Pulse.\n` +
+                                    `¡Te esperamos!`;
+                    
+                    const mensajeEncoded = encodeURIComponent(mensaje);
+                    
+                    linkWs = `<a href="https://wa.me/${telLimpio}?text=${mensajeEncoded}" target="_blank">
                                 <img src="${WS_ICON_URL}" class="ws-agenda-icon">
-                              </a>`;
+                            </a>`;
                 }
+
+                return `<div style="margin-bottom:6px; display:flex; align-items:center;">
+                            <span>${i+1}-${nombreLimpio}</span>
+                            ${linkWs}
+                        </div>`;
+            }).join('');
+        }
 
                 return `<div style="margin-bottom:6px; display:flex; align-items:center;">
                             <span>${i+1}-${nombreLimpio}</span>
