@@ -356,7 +356,8 @@
             } return res;
         }
 
-        function formatAlumnosAgenda(texto) {
+        // FUNCIÓN CORREGIDA PARA MENSAJE DE WHATSAPP PERSONALIZADO
+        function formatAlumnosAgenda(texto, horaClase, tipoClase) {
             if(!texto) return '';
             const alumnosArray = texto.split(',');
             return alumnosArray.map((nombreRaw, i) => {
@@ -366,7 +367,18 @@
                 let linkWs = '';
                 if (alumnoDB) {
                     const telLimpio = alumnoDB.contenido.split('|')[2].replace(/\s+/g, '');
-                    linkWs = `<a href="https://wa.me/${telLimpio}" target="_blank">
+                    
+                    // Construcción del mensaje solicitado
+                    const mensaje = `Buenas tardes ${nombreLimpio}!! 👋🏻🌤️\n` +
+                                    `Tienes una reservación para recibir tu clase de ${tipoClase}\n` +
+                                    `Horario: ${horaClase}\n` +
+                                    `Por favor, confirmar asistencia.\n` +
+                                    `Pilates Pulse.\n` +
+                                    `¡Te esperamos!`;
+                    
+                    const mensajeEncoded = encodeURIComponent(mensaje);
+
+                    linkWs = `<a href="https://wa.me/${telLimpio}?text=${mensajeEncoded}" target="_blank">
                                 <img src="${WS_ICON_URL}" class="ws-agenda-icon">
                             </a>`;
                 }
@@ -412,8 +424,9 @@
                 document.getElementById(`badge-${d}`).innerText = filtrados.length;
                 document.getElementById(`clases-${d}`).innerHTML = filtrados.map(i => {
                     const p = i.contenido.split('|');
+                    // PASAMOS p[0] (HORA) Y p[1] (CLASE) A LA FUNCIÓN
                     return `<div class="clase-box" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.75rem; line-height: 1.4;"><b>${p[0]}</b> — ${p[1]}<br><small style="opacity:0.6;">${p[2]}</small><br><div style="margin-top:8px;">${formatAlumnosAgenda(p[3])}</div></span>
+                        <span style="font-size:0.75rem; line-height: 1.4;"><b>${p[0]}</b> — ${p[1]}<br><small style="opacity:0.6;">${p[2]}</small><br><div style="margin-top:8px;">${formatAlumnosAgenda(p[3], p[0], p[1])}</div></span>
                         <div style="display:flex; gap:10px; align-items:center;">
                             <span onclick="addClasePopup('${d}', '${i.id}', '${i.contenido}')" style="cursor:pointer; font-size:0.8rem; opacity:0.5; transition:0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">📝</span>
                             <span onclick="borrar('${i.id}')" style="opacity:0.1; cursor:pointer; font-weight:900; transition:0.3s;" onmouseover="this.style.opacity=1; this.style.color='var(--danger)'" onmouseout="this.style.opacity=0.1; this.style.color='white'">×</span>
