@@ -149,7 +149,6 @@
 
         .vence-alerta { color: var(--danger) !important; text-shadow: 0 0 10px rgba(255, 45, 85, 0.3); }
 
-        /* WhatsApp Styles */
         .ws-wrapper {
             display: inline-flex;
             align-items: center;
@@ -170,7 +169,6 @@
             font-size: 0.8rem;
         }
 
-        /* Icono Agenda específico */
         .ws-agenda-icon {
             width: 16px;
             height: 16px;
@@ -274,7 +272,7 @@
         const CLASES = ["Align Flow", "Power Flow", "Stretch&Release", "Aerial Balance", "Mega Core", "Life Align"];
         const MODALIDADES = ["Grupales", "Privadas", "Masajes", "Cumpleaños"];
         const FRECUENCIAS = ["1/semana", "2/semana", "3/semana"];
-        const WS_ICON_URL = "https://i.postimg.cc/9M0NRgcD/Whats-App-svg.webp";
+        const WS_ICON_URL = "https://i.postimg.cc/HWQkv6Qv/whatsapp-vector-logo-icono-logotipo-vector-redes-sociales-901408-406.avif";
         let CACHE_ALUMNOS = [];
         let CACHE_HORARIOS = [];
 
@@ -373,7 +371,7 @@
             } return res;
         }
 
-        function formatAlumnosAgenda(texto, hora) {
+        function formatAlumnosAgenda(texto) {
             if(!texto) return '';
             const alumnosArray = texto.split(',');
             return alumnosArray.map((nombreRaw, i) => {
@@ -383,8 +381,7 @@
                 let linkWs = '';
                 if (alumnoDB) {
                     const telLimpio = alumnoDB.contenido.split('|')[2].replace(/\s+/g, '');
-                    const mensaje = encodeURIComponent(`Recuerda tu clase a las ${hora}`);
-                    linkWs = `<a href="https://wa.me/${telLimpio}?text=${mensaje}" target="_blank">
+                    linkWs = `<a href="https://wa.me/${telLimpio}" target="_blank">
                                 <img src="${WS_ICON_URL}" class="ws-agenda-icon">
                               </a>`;
                 }
@@ -432,7 +429,7 @@
                 document.getElementById(`clases-${d}`).innerHTML = filtrados.map(i => {
                     const p = i.contenido.split('|');
                     return `<div class="clase-box" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.75rem; line-height: 1.4;"><b>${p[0]}</b> — ${p[1]}<br><small style="opacity:0.6;">${p[2]}</small><br><div style="margin-top:8px;">${formatAlumnosAgenda(p[3], p[0])}</div></span>
+                        <span style="font-size:0.75rem; line-height: 1.4;"><b>${p[0]}</b> — ${p[1]}<br><small style="opacity:0.6;">${p[2]}</small><br><div style="margin-top:8px;">${formatAlumnosAgenda(p[3])}</div></span>
                         <div style="display:flex; gap:10px; align-items:center;">
                             <span onclick="addClasePopup('${d}', '${i.id}', '${i.contenido}')" style="cursor:pointer; font-size:0.8rem; opacity:0.5; transition:0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">📝</span>
                             <span onclick="borrar('${i.id}')" style="opacity:0.1; cursor:pointer; font-weight:900; transition:0.3s;" onmouseover="this.style.opacity=1; this.style.color='var(--danger)'" onmouseout="this.style.opacity=0.1; this.style.color='white'">×</span>
