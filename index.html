@@ -231,12 +231,14 @@
         }
 
         function a24h(horaStr) {
+            if (!horaStr) return 0;
             let [tiempo, ampm] = horaStr.split(' ');
             let [hh, mm] = tiempo.split(':');
             hh = parseInt(hh);
+            mm = parseInt(mm);
             if (ampm === "PM" && hh < 12) hh += 12;
             if (ampm === "AM" && hh === 12) hh = 0;
-            return hh * 60 + parseInt(mm);
+            return hh * 60 + mm;
         }
 
         async function pushClase(dia, editId = "null") {
@@ -248,7 +250,6 @@
                 await _sp.from('horarios').insert([{ celda_id: dia, contenido: content }]);
             }
             
-            // OCULTAR INTERFAZ AL GUARDAR
             document.getElementById('edit-form-crono').innerHTML = '';
             document.getElementById(`clase-form-${dia}`).innerHTML = '';
             
@@ -257,10 +258,12 @@
 
         async function updateAll() {
             const { data } = await _sp.from('horarios').select('*');
-            CACHE_HORARIOS = data.sort((a, b) => {
-                if (a.celda_id === 'DB_ENTRY' || b.celda_id === 'DB_ENTRY') return 0;
+            
+            // FILTRADO Y ORDENAMIENTO DE CLASES POR HORA (AM -> PM)
+            CACHE_HORARIOS = data.filter(x => x.celda_id !== 'DB_ENTRY').sort((a, b) => {
                 return a24h(a.contenido.split('|')[0]) - a24h(b.contenido.split('|')[0]);
             });
+
             CACHE_ALUMNOS = data.filter(x => x.celda_id === 'DB_ENTRY');
             
             DIAS.forEach(d => {
@@ -412,7 +415,6 @@
             if(editId !== "null") await _sp.from('horarios').update({ contenido: content }).eq('id', editId);
             else await _sp.from('horarios').insert([{ celda_id: 'DB_ENTRY', contenido: content }]);
             
-            // OCULTAR INTERFAZ AL GUARDAR
             cerrarFormAlumno(); 
             updateAll();
         }
