@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="https://i.postimg.cc/Xqs2VjT0/image.png">
     <link rel="apple-touch-icon" href="https://i.postimg.cc/Xqs2VjT0/image.png">
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>4
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&family=Playfair+Display:italic,wght@700&display=swap" rel="stylesheet">
     
     <style>
@@ -18,6 +18,7 @@
             --accent: #ffffff;
             --celeste: #a2d2ff;
             --danger: #ff2d55;
+            --success: #25D366;
             --whatsapp: #25D366;
             --border: rgba(255, 255, 255, 0.08);
             --font-main: 'Montserrat', sans-serif;
@@ -149,25 +150,23 @@
 
         .vence-alerta { color: var(--danger) !important; text-shadow: 0 0 10px rgba(255, 45, 85, 0.3); }
 
-        .ws-wrapper {
-            display: inline-flex;
-            align-items: center;
-            text-decoration: none;
-            margin-top: 5px;
-            transition: transform 0.2s;
-        }
-        .ws-wrapper:active { transform: scale(0.95); }
-        .ws-icon {
+        /* Control de Asistencia */
+        .check-btn {
             width: 18px;
             height: 18px;
-            margin-right: 8px;
-            object-fit: contain;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.2);
+            margin-right: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 900;
+            transition: all 0.3s;
         }
-        .ws-number {
-            color: var(--whatsapp);
-            font-weight: 700;
-            font-size: 0.8rem;
-        }
+        .check-btn.presente { background: var(--success); border-color: var(--success); color: #000; }
+        .check-btn.ausente { background: var(--danger); border-color: var(--danger); color: #fff; }
 
         .ws-agenda-icon {
             width: 16px;
@@ -272,7 +271,7 @@
         const CLASES = ["Align Flow", "Power Flow", "Stretch&Release", "Aerial Balance", "Mega Core", "Life Align"];
         const MODALIDADES = ["Grupales", "Privadas", "Masajes", "Cumpleaños"];
         const FRECUENCIAS = ["1/semana", "2/semana", "3/semana"];
-        const WS_ICON_URL = "https://i.postimg.cc/9M0NRgcD/Whats-App-svg.webp";
+        const WS_ICON_URL = "https://i.postimg.cc/HWQkv6Qv/whatsapp-vector-logo-icono-logotipo-vector-redes-sociales-901408-406.avif";
         let CACHE_ALUMNOS = [];
         let CACHE_HORARIOS = [];
 
@@ -345,7 +344,7 @@
         }
 
         function addClasePopup(dia, editId = null, existingData = null) {
-            const p = existingData ? existingData.split('|') : ["", "", "", ""];
+            const p = existingData ? existingData.split('|') : ["", "", "", "", ""];
             const isCrono = document.getElementById('modulo-cronograma').style.display === 'block';
             const targetDiv = editId ? (isCrono ? 'edit-form-crono' : `clase-form-${dia}`) : `clase-form-${dia}`;
             
@@ -355,7 +354,7 @@
                     <label>TIPO DE CLASE</label><select id="t-${dia}">${CLASES.map(c=>`<option ${p[1]==c?'selected':''}>${c}</option>`).join('')}</select>
                     <label>MODALIDAD</label><select id="m-${dia}">${MODALIDADES.map(m=>`<option ${p[2]==m?'selected':''}>${m}</option>`).join('')}</select>
                     <label>ALUMNO(S) - (Separar por coma)</label><input type="text" id="n-${dia}" value="${p[3]}">
-                    <button class="btn-principal" style="padding:12px; font-size:0.6rem; letter-spacing:1px;" onclick="pushClase('${dia}', '${editId}')">GUARDAR</button>
+                    <button class="btn-principal" style="padding:12px; font-size:0.6rem; letter-spacing:1px;" onclick="pushClase('${dia}', '${editId}', '${p[4] || ''}')">GUARDAR</button>
                     ${editId ? `<button class="btn-cancelar" style="background:var(--danger); color:white; padding:10px; font-size:0.5rem; border:none;" onclick="borrar('${editId}')">ELIMINAR</button>` : ''}
                     <button class="btn-cancelar" style="padding:10px; font-size:0.5rem;" onclick="document.getElementById('${targetDiv}').innerHTML=''">CANCELAR</button>
                 </div>`;
@@ -371,22 +370,43 @@
             } return res;
         }
 
-        function formatAlumnosAgenda(texto) {
+        // --- ASISTENCIA LOGIC ---
+        async function toggleAsistencia(claseId, alumnoIdx) {
+            const clase = CACHE_HORARIOS.find(c => c.id == claseId);
+            if(!clase) return;
+            let parts = clase.contenido.split('|');
+            let asistenciaArr = parts[4] ? parts[4].split(',') : new Array(parts[3].split(',').length).fill('0');
+            
+            // Ciclo: 0 (pendiente) -> 1 (presente) -> 2 (ausente) -> 0
+            let current = parseInt(asistenciaArr[alumnoIdx] || '0');
+            asistenciaArr[alumnoIdx] = (current + 1) % 3;
+            
+            parts[4] = asistenciaArr.join(',');
+            await _sp.from('horarios').update({ contenido: parts.join('|') }).eq('id', claseId);
+            updateAll();
+        }
+
+        function formatAlumnosAgenda(texto, claseId, asistenciaStr) {
             if(!texto) return '';
             const alumnosArray = texto.split(',');
+            const asistenciaArray = asistenciaStr ? asistenciaStr.split(',') : [];
+            
             return alumnosArray.map((nombreRaw, i) => {
                 const nombreLimpio = nombreRaw.trim();
+                const estado = asistenciaArray[i] || '0'; // 0=pend, 1=pres, 2=aus
                 const alumnoDB = CACHE_ALUMNOS.find(a => a.contenido.split('|')[1].toLowerCase() === nombreLimpio.toLowerCase());
                 
                 let linkWs = '';
                 if (alumnoDB) {
                     const telLimpio = alumnoDB.contenido.split('|')[2].replace(/\s+/g, '');
-                    linkWs = `<a href="https://wa.me/${telLimpio}" target="_blank">
-                                <img src="${WS_ICON_URL}" class="ws-agenda-icon">
-                              </a>`;
+                    linkWs = `<a href="https://wa.me/${telLimpio}" target="_blank"><img src="${WS_ICON_URL}" class="ws-agenda-icon"></a>`;
                 }
 
-                return `<div style="margin-bottom:6px; display:flex; align-items:center;">
+                let checkClass = estado == '1' ? 'presente' : (estado == '2' ? 'ausente' : '');
+                let checkIcon = estado == '1' ? '✓' : (estado == '2' ? '×' : '');
+
+                return `<div style="margin-bottom:8px; display:flex; align-items:center; font-size:0.7rem;">
+                            <div class="check-btn ${checkClass}" onclick="toggleAsistencia('${claseId}', ${i})">${checkIcon}</div>
                             <span>${i+1}-${nombreLimpio}</span>
                             ${linkWs}
                         </div>`;
@@ -404,8 +424,13 @@
             return hh * 60 + mm;
         }
 
-        async function pushClase(dia, editId = "null") {
-            const content = `${document.getElementById('h-'+dia).value}|${document.getElementById('t-'+dia).value}|${document.getElementById('m-'+dia).value}|${document.getElementById('n-'+dia).value}`;
+        async function pushClase(dia, editId = "null", asistenciaActual = "") {
+            const h = document.getElementById('h-'+dia).value;
+            const t = document.getElementById('t-'+dia).value;
+            const m = document.getElementById('m-'+dia).value;
+            const n = document.getElementById('n-'+dia).value;
+            const content = `${h}|${t}|${m}|${n}|${asistenciaActual}`;
+            
             if (editId !== "null") {
                 await _sp.from('horarios').update({ contenido: content }).eq('id', editId);
             } else {
@@ -429,10 +454,10 @@
                 document.getElementById(`clases-${d}`).innerHTML = filtrados.map(i => {
                     const p = i.contenido.split('|');
                     return `<div class="clase-box" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.75rem; line-height: 1.4;"><b>${p[0]}</b> — ${p[1]}<br><small style="opacity:0.6;">${p[2]}</small><br><div style="margin-top:8px;">${formatAlumnosAgenda(p[3])}</div></span>
+                        <span style="font-size:0.75rem; line-height: 1.4;"><b>${p[0]}</b> — ${p[1]}<br><small style="opacity:0.6;">${p[2]}</small><br><div style="margin-top:10px;">${formatAlumnosAgenda(p[3], i.id, p[4])}</div></span>
                         <div style="display:flex; gap:10px; align-items:center;">
-                            <span onclick="addClasePopup('${d}', '${i.id}', '${i.contenido}')" style="cursor:pointer; font-size:0.8rem; opacity:0.5; transition:0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">📝</span>
-                            <span onclick="borrar('${i.id}')" style="opacity:0.1; cursor:pointer; font-weight:900; transition:0.3s;" onmouseover="this.style.opacity=1; this.style.color='var(--danger)'" onmouseout="this.style.opacity=0.1; this.style.color='white'">×</span>
+                            <span onclick="addClasePopup('${d}', '${i.id}', '${i.contenido}')" style="cursor:pointer; font-size:0.8rem; opacity:0.5;">📝</span>
+                            <span onclick="borrar('${i.id}')" style="opacity:0.1; cursor:pointer; font-weight:900;">×</span>
                         </div>
                     </div>`;
                 }).join('');
@@ -452,22 +477,23 @@
                         <div class="crono-list">
                             ${clasesDelDia.length > 0 ? clasesDelDia.map(c => {
                                 const p = c.contenido.split('|');
+                                const asisArr = p[4] ? p[4].split(',') : [];
+                                const countPresentes = asisArr.filter(x => x=='1').length;
                                 return `
                                 <div class="crono-task">
                                     <div class="crono-task-main">
                                         <div style="display:flex; align-items:center; cursor:pointer;" onclick="toggleCronoDetail('${c.id}')">
-                                            <div class="crono-bullet"></div> 
-                                            <b>${p[0]}</b> &nbsp; — &nbsp; ${p[1]}
+                                            <div class="crono-bullet" style="background:${countPresentes > 0 ? 'var(--success)' : 'var(--celeste)'}"></div> 
+                                            <b>${p[0]}</b> &nbsp; — &nbsp; ${p[1]} 
+                                            <small style="margin-left:10px; opacity:0.5">(${countPresentes}/${p[3].split(',').length})</small>
                                         </div>
                                         <span class="crono-edit-icon" onclick="addClasePopup('${dia}', '${c.id}', '${c.contenido}')">📝</span>
                                     </div>
                                     <div id="crono-detail-${c.id}" class="crono-detail-box">
-                                        <b style="color:var(--celeste)">ALUMNOS:</b><br>
-                                        <div style="margin-top:5px; color:#fff;">${p[3].split(',').map((n, idx) => `${idx+1}-${n.trim()}`).join('<br>')}</div>
-                                        <div style="margin-top:8px; opacity:0.6;"><b>MODALIDAD:</b> ${p[2]}</div>
+                                        <div style="color:#fff;">${formatAlumnosAgenda(p[3], c.id, p[4])}</div>
                                     </div>
                                 </div>`;
-                            }).join('') : '<div style="opacity:0.2; font-size:0.7rem; margin-left:18px; font-style:italic;">Sin clases</div>'}
+                            }).join('') : '<div style="opacity:0.2; font-size:0.7rem; margin-left:18px;">Sin clases</div>'}
                         </div>
                     </div>`;
             }).join('');
@@ -505,19 +531,14 @@
                     <small style="opacity:0.5;">${p[3]} — ${p[4]}</small>
                     <div id="extra-${a.id}" class="ficha-detalles">
                         <p><b>EDAD:</b> ${p[11]} años</p>
-                        <p><b>TELÉFONO:</b> ${p[2]}</p>
                         <p><b>MODALIDAD:</b> ${p[5]}</p>
                         <p><b>VENCIMIENTO:</b> <span class="${estaVencido ? 'vence-alerta' : ''}">${p[10] || 'N/A'}</span></p>
                         <hr style="opacity:0.1; margin:10px 0;">
                         <p><b>SALUD:</b> ${p[6] || 'Ninguna'}</p>
-                        <p><b>VISITA:</b> ${p[7] || 'N/A'}</p>
-                        <p><b>ORIGEN:</b> ${p[8] || 'N/A'}</p>
-                        <p><b>REFERIDO:</b> ${p[9]}</p>
-                        <button class="btn-principal" style="padding:10px; font-size:0.55rem; margin-top:15px; letter-spacing:1px;" onclick="abrirFormNuevoAlumno('${a.id}', '${a.contenido}')">EDITAR</button>
                     </div>
                     <div style="margin-top:15px; display:flex; gap:10px; justify-content:space-between; align-items:center;">
-                        <button class="nav-btn" style="padding:10px 20px; font-size:0.5rem; background:#1a1a1c; border-color:#333; letter-spacing:1px;" onclick="toggleExtra('${a.id}')">DETALLES</button>
-                        <button style="background:transparent; border:none; color:var(--danger); font-size:0.55rem; font-weight:900; cursor:pointer; opacity:0.8; transition:0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8" onclick="borrar('${a.id}')">BORRAR</button>
+                        <button class="nav-btn" style="padding:10px 20px; font-size:0.5rem; background:#1a1a1c; border-color:#333;" onclick="toggleExtra('${a.id}')">DETALLES</button>
+                        <button style="background:transparent; border:none; color:var(--danger); font-size:0.55rem; font-weight:900;" onclick="borrar('${a.id}')">BORRAR</button>
                     </div>
                 </div>`;
             }).join('');
@@ -528,11 +549,11 @@
             let alertas = CACHE_ALUMNOS.filter(a => checkVencimiento(a.contenido.split('|')[10]));
             document.getElementById('active-dot').style.display = alertas.length > 0 ? 'block' : 'none';
             if (alertas.length === 0) {
-                listaNotif.innerHTML = `<p style="text-align:center; opacity:0.3; font-size:0.7rem; font-style:italic; margin-top:30px;">No hay vencimientos próximos.</p>`;
+                listaNotif.innerHTML = `<p style="text-align:center; opacity:0.3; font-size:0.7rem; margin-top:30px;">No hay vencimientos próximos.</p>`;
             } else {
                 listaNotif.innerHTML = alertas.map(a => {
                     const p = a.contenido.split('|');
-                    return `<div class="clase-box" style="border-left: 4px solid var(--danger); animation: cardPulse 3s infinite ease-in-out;">
+                    return `<div class="clase-box" style="border-left: 4px solid var(--danger);">
                         <b style="color:var(--danger)">${p[1]}</b><br>
                         <small>Vence: <b>${p[10]}</b></small>
                     </div>`;
@@ -556,19 +577,16 @@
             let edades = ""; for(let i=1; i<=100; i++) edades += `<option value="${i}">${i}</option>`;
             document.getElementById('btn-abrir-registro').style.display = 'none';
             document.getElementById('form-alumno-nuevo').innerHTML = `
-                <div style="background:#111; padding:20px; border-radius:30px; border:1px solid #222; margin-bottom:20px; animation: fadeIn 0.4s ease;">
+                <div style="background:#111; padding:20px; border-radius:30px; border:1px solid #222; margin-bottom:20px;">
                     <label>Nombre</label><input type="text" id="db-nom" value="${p[1]}">
                     <label>Edad</label><select id="db-edad">${edades}</select>
-                    <label>Teléfono (formato internacional ej: 549...)</label><input type="text" id="db-tel" value="${p[2]}">
+                    <label>Teléfono</label><input type="text" id="db-tel" value="${p[2]}">
                     <label>Clase</label><select id="db-clase">${CLASES.map(c=>`<option ${p[3]==c?'selected':''}>${c}</option>`).join('')}</select>
                     <label>Frecuencia</label><select id="db-frec">${FRECUENCIAS.map(f=>`<option ${p[4]==f?'selected':''}>${f}</option>`).join('')}</select>
                     <label>Modalidad</label><select id="db-mod">${MODALIDADES.map(m=>`<option ${p[5]==m?'selected':''}>${m}</option>`).join('')}</select>
                     <label>Vencimiento</label><input type="date" id="db-vence" value="${p[10]}">
                     <label>Salud</label><textarea id="db-salud" rows="2">${p[6]}</textarea>
-                    <label>Visita</label><textarea id="db-visita" rows="2">${p[7]}</textarea>
-                    <label>Origen</label><textarea id="db-fuente" rows="2">${p[8]}</textarea>
-                    <label>Referido</label><select id="db-ref"><option ${p[9]=='No'?'selected':''}>No</option><option ${p[9]=='Si'?'selected':''}>Si</option></select>
-                    <button class="btn-principal" style="letter-spacing:1px;" onclick="saveAlumno('${editId}')">GUARDAR</button>
+                    <button class="btn-principal" onclick="saveAlumno('${editId}')">GUARDAR</button>
                     <button class="btn-cancelar" onclick="cerrarFormAlumno()">CANCELAR</button>
                 </div>`;
             if(editId) document.getElementById('db-edad').value = p[11];
@@ -576,7 +594,7 @@
 
         async function saveAlumno(editId = "null") {
             const d = (id) => document.getElementById(id).value;
-            const content = `DB|${d('db-nom')}|${d('db-tel')}|${d('db-clase')}|${d('db-frec')}|${d('db-mod')}|${d('db-salud')}|${d('db-visita')}|${d('db-fuente')}|${d('db-ref')}|${d('db-vence')}|${d('db-edad')}`;
+            const content = `DB|${d('db-nom')}|${d('db-tel')}|${d('db-clase')}|${d('db-frec')}|${d('db-mod')}|${d('db-salud')}||||${d('db-vence')}|${d('db-edad')}`;
             if(editId !== "null") await _sp.from('horarios').update({ contenido: content }).eq('id', editId);
             else await _sp.from('horarios').insert([{ celda_id: 'DB_ENTRY', contenido: content }]);
             cerrarFormAlumno(); 
@@ -593,23 +611,16 @@
             document.getElementById('modulo-cronograma').style.display = id === 'modulo-cronograma' ? 'block' : 'none';
             document.getElementById('modulo-alumnos').style.display = id === 'modulo-alumnos' ? 'block' : 'none';
             document.getElementById('modulo-notificaciones').style.display = id === 'modulo-notificaciones' ? 'block' : 'none';
-            
             document.getElementById('main-brand').style.display = id === 'modulo-cronograma' ? 'none' : 'flex';
-
             document.getElementById('btn-agenda').classList.toggle('active-btn', id === 'modulo-agenda');
             document.getElementById('btn-crono').classList.toggle('active-btn', id === 'modulo-cronograma');
             document.getElementById('btn-db').classList.toggle('active-btn', id === 'modulo-alumnos');
             document.getElementById('btn-notif').classList.toggle('active-btn', id === 'modulo-notificaciones');
-            
-            if(id === 'modulo-cronograma') {
-                document.getElementById('edit-form-crono').innerHTML = '';
-            }
         }
 
         async function borrar(id) { 
             if(confirm("¿Borrar definitivamente?")) { 
                 await _sp.from('horarios').delete().eq('id', id); 
-                document.getElementById('edit-form-crono').innerHTML = '';
                 updateAll(); 
             } 
         }
