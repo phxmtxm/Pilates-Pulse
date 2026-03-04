@@ -14,7 +14,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div class="bokeh-container"></div>
 
     <div id="login-section">
@@ -42,26 +41,19 @@
         </div>
 
         <div class="main-container">
-            <div id="modulo-agenda">
-                <div id="listaDias"></div>
-            </div>
-
+            <div id="modulo-agenda"><div id="listaDias"></div></div>
             <div id="modulo-cronograma" style="display:none;">
                 <div class="branding-container" style="padding-top: 0;">
-                    <div class="logo-pulse-circle" style="width: 50px; height: 50px;">
-                        <img src="https://i.postimg.cc/Xqs2VjT0/image.png">
-                    </div>
+                    <div class="logo-pulse-circle" style="width: 50px; height: 50px;"><img src="https://i.postimg.cc/Xqs2VjT0/image.png"></div>
                 </div>
                 <div class="crono-header-text">Cronograma</div>
                 <div id="edit-form-crono" style="margin-bottom: 20px;"></div>
                 <div id="render-cronograma"></div>
             </div>
-
             <div id="modulo-notificaciones" style="display:none;">
                 <h3 style="font-size:0.7rem; color:#fff; letter-spacing:2px; text-align:center; margin-bottom:20px;">PRÓXIMOS VENCIMIENTOS</h3>
                 <div id="lista-notificaciones"></div>
             </div>
-
             <div id="modulo-alumnos" style="display:none;">
                 <div class="search-container">
                     <span class="search-icon">🔍</span>
@@ -76,9 +68,7 @@
                 <button class="nav-btn" id="btn-agenda" onclick="switchModulo('modulo-agenda')">AGENDA</button>
                 <button class="nav-btn" id="btn-crono" onclick="switchModulo('modulo-cronograma')">CRONO</button>
                 <button class="nav-btn" id="btn-db" onclick="switchModulo('modulo-alumnos')">BASE DATOS</button>
-                <button class="nav-btn" id="btn-notif" onclick="switchModulo('modulo-notificaciones')">
-                    NOTIF. <div class="dot-notif" id="active-dot"></div>
-                </button>
+                <button class="nav-btn" id="btn-notif" onclick="switchModulo('modulo-notificaciones')">NOTIF. <div class="dot-notif" id="active-dot"></div></button>
             </nav>
         </div>
     </div>
