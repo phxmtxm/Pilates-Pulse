@@ -245,11 +245,11 @@
         </div>
 
         <div class="main-container">
-            <div id="modulo-agenda">
+            <div id="modulo-agenda" class="module">
                 <div id="listaDias"></div>
             </div>
 
-            <div id="modulo-cronograma" style="display:none;">
+            <div id="modulo-cronograma" class="module" style="display:none;">
                 <div class="branding-container" style="padding-top: 0;">
                     <div class="logo-pulse-circle" style="width: 50px; height: 50px;"><img src="https://i.postimg.cc/Xqs2VjT0/image.png"></div>
                 </div>
@@ -258,12 +258,12 @@
                 <div id="render-cronograma"></div>
             </div>
 
-            <div id="modulo-notificaciones" style="display:none;">
+            <div id="modulo-notificaciones" class="module" style="display:none;">
                 <h3 style="font-size:0.7rem; color:#fff; letter-spacing:2px; text-align:center; margin-bottom:20px;">PRÓXIMOS VENCIMIENTOS</h3>
                 <div id="lista-notificaciones"></div>
             </div>
 
-            <div id="modulo-alumnos" style="display:none;">
+            <div id="modulo-alumnos" class="module" style="display:none;">
                 <div class="search-container">
                     <span class="search-icon">🔍</span>
                     <input type="text" id="buscadorAlumnos" class="search-input" placeholder="Buscar alumno..." onkeyup="filtrarAlumnos()">
@@ -293,6 +293,7 @@
         const WS_ICON_URL = "https://i.postimg.cc/9M0NRgcD/Whats-App-svg.webp";
         let CACHE_ALUMNOS = [];
         let CACHE_HORARIOS = [];
+        let lastModule = 'modulo-agenda'; // track current panel for directional animation
 
         window.onload = () => {
             initBokeh();
@@ -650,18 +651,56 @@
         
         function switchModulo(id) {
             const modules = ['modulo-agenda', 'modulo-cronograma', 'modulo-alumnos', 'modulo-notificaciones'];
-            modules.forEach(m => {
-                const el = document.getElementById(m);
-                if (m === id) {
-                    el.style.display = 'block';
-                    // trigger animation by reflow
-                    el.classList.remove('fade-in');
-                    void el.offsetWidth;
-                    el.classList.add('fade-in');
-                } else {
-                    el.style.display = 'none';
-                }
+            if (id === lastModule) return;
+
+            const curEl = document.getElementById(lastModule);
+            const newEl = document.getElementById(id);
+            const curIndex = modules.indexOf(lastModule);
+            const newIndex = modules.indexOf(id);
+            const direction = newIndex > curIndex ? 'right' : 'left';
+
+            const container = document.querySelector('.main-container');
+            const origHeight = container.offsetHeight;
+            container.style.minHeight = origHeight + 'px';
+
+            // prepare positioning
+            [curEl, newEl].forEach(el => {
+                el.style.position = 'absolute';
+                el.style.top = '0';
+                el.style.left = '0';
+                el.style.width = '100%';
             });
+
+            // show new and position offscreen
+            newEl.style.display = 'block';
+            newEl.style.transition = 'transform 0.4s ease';
+            curEl.style.transition = 'transform 0.4s ease';
+            newEl.style.transform = direction === 'right' ? 'translateX(-100%)' : 'translateX(100%)';
+
+            // animate
+            requestAnimationFrame(() => {
+                curEl.style.transform = direction === 'right' ? 'translateX(100%)' : 'translateX(-100%)';
+                newEl.style.transform = 'translateX(0)';
+            });
+
+            setTimeout(() => {
+                // cleanup
+                curEl.style.display = 'none';
+                [curEl, newEl].forEach(el => {
+                    el.style.transform = '';
+                    el.style.transition = '';
+                    el.style.position = '';
+                    el.style.top = '';
+                    el.style.left = '';
+                    el.style.width = '';
+                });
+                container.style.minHeight = '';
+            }, 400);
+
+            // fade-in internal content
+            newEl.classList.remove('fade-in');
+            void newEl.offsetWidth;
+            newEl.classList.add('fade-in');
 
             document.getElementById('main-brand').style.display = id === 'modulo-cronograma' ? 'none' : 'flex';
 
@@ -672,6 +711,8 @@
             if(id === 'modulo-cronograma') {
                 document.getElementById('edit-form-crono').innerHTML = '';
             }
+
+            lastModule = id;
         }
 
         async function borrar(id) { 
